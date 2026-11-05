@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ASCII Rose 3D</title>
+<title>hehe</title>
 <style>
 :root{color-scheme:dark;--bg:#07030a;--dim:#a58aa0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;margin:0;background:var(--bg);overflow:hidden}
@@ -14,10 +14,17 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
 #replay{position:absolute;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);background:rgba(255,255,255,.07);color:var(--dim);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 14px;font:inherit;font-size:12px}
 #ghint{display:none;transition:opacity 1.2s;color:var(--dim);font-size:12px;margin-top:6px}
 #clear,#mode{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);background:rgba(255,255,255,.07);color:var(--dim);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 14px;font:inherit;font-size:12px}
-#mode{left:14px}#clear{right:14px;display:none}
+#clear{display:none}
 body.garden #c,body.garden #replay,body.garden #hint{display:none}
 body.garden #ghint,body.garden #clear{display:block}
 body:not(.garden) #gcv{display:none}
+#mode{left:calc(env(safe-area-inset-left,0px) + 14px)}
+#clear,#replay{right:calc(env(safe-area-inset-right,0px) + 14px)}
+@media (orientation:landscape) and (max-height:520px){
+  #msg{top:calc(env(safe-area-inset-top,0px) + 8px);font-size:13px}
+  #hint,#ghint{margin-top:2px}
+  #clear,#mode,#replay{padding:5px 11px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px)}
+}
 </style>
 </head>
 <body>
@@ -364,7 +371,9 @@ const HUES = [335, 350, 15, 42, 285, 205, 305, 160], RAMP = '%80o*+:.';
 const rnd = (a, b) => a + Math.random() * (b - a), ease = t => t * t * (3 - 2 * t);
 function resize() {
   dpr = Math.min(window.devicePixelRatio || 1, 2); W = cv.clientWidth; H = cv.clientHeight;
-  cv.width = W * dpr; cv.height = H * dpr; fs = W < 500 ? 14 : 17;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const land = W > H && H < 520;  // phone held sideways
+  fs = land ? Math.max(9, Math.min(12, Math.round(H / 30))) : W < 500 ? 14 : 17;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.font = fs + 'px ui-monospace, Menlo, Consolas, monospace';
   cw = ctx.measureText('M').width; chh = fs * 1.15; cols = Math.floor(W / cw); rows = Math.floor(H / chh);
   flowers = []; parts = [];
@@ -372,7 +381,7 @@ function resize() {
   seed();
 }
 function plant(col, row) {
-  row = Math.max(5, Math.min(rows - 6, row)); col = Math.max(3, Math.min(cols - 4, col));
+  const mt = rows < 34 ? 4 : 5; row = Math.max(mt, Math.min(rows - 6, row)); col = Math.max(3, Math.min(cols - 4, col));
   const small = cols < 60;
   const f = {cx: col, cy: row, bx: col + rnd(-5, 5), born: performance.now() / 1000, h: HUES[Math.floor(rnd(0, HUES.length))] + rnd(-8, 8), n: Math.floor(rnd(5, 10)), R: rnd(4, 7) * (small ? .85 : 1.2), rot: rnd(0, 6.3), ph: rnd(0, 6.3), dur: rnd(2.2, 3.2)};
   f.bx = Math.max(1, Math.min(cols - 2, f.bx)); flowers.push(f); if (flowers.length > 45) flowers.shift();
@@ -463,6 +472,7 @@ addEventListener('pointerup', () => down = false);
 addEventListener('pointercancel', () => down = false);
 document.getElementById('clear').addEventListener('click', () => { flowers = []; parts = []; });
 addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (cv.clientWidth) resize(); }, 200); });
+addEventListener('orientationchange', () => { clearTimeout(rt); rt = setTimeout(() => { if (cv.clientWidth) resize(); }, 350); });
 window.gardenShow = () => {
   if (cv.clientWidth !== W || cv.clientHeight !== H) resize();
   if (!running) { running = true; requestAnimationFrame(frame); }
