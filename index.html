@@ -27,13 +27,13 @@ body:not(.garden) #gcv{display:none}
 }
 </style>
 </head>
-<body>
+<body class="garden">
 <canvas id="c"></canvas>
 <canvas id="gcv"></canvas>
 <div id="msg"><div id="text"></div><div id="hint">drag to turn the rose</div><div id="ghint">tap or drag to grow flowers ✿</div></div>
 <button id="replay" type="button">replay</button>
 <button id="clear" type="button">clear</button>
-<button id="mode" type="button">garden ✿</button>
+<button id="mode" type="button">rose 🌹</button>
 <script>
 // Put your own message here (leave empty for none)
 const MESSAGE = "";
@@ -485,6 +485,7 @@ modeBtn.addEventListener('click', () => {
   modeBtn.textContent = g ? 'rose 🌹' : 'garden ✿';
   if (g) window.gardenShow(); else resize();
 });
+window.gardenShow();
 </script>
 </body>
 </html>
